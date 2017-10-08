@@ -1,14 +1,11 @@
 var express = require('express');
 var app = express();
-var fs = require('fs');
+var path = require('path');
 
 const PORT = 5001;
 
-app.use(express.static('public'));
-
-app.get('/', function(req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
+var staticPath = path.join(__dirname, '/public');
+app.use(express.static(staticPath));
 
 // =============================================================================
 // fire up the server
