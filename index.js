@@ -2,10 +2,10 @@ $(function() {
   const numQuotes = 20;
 
   var $ulQuotes = $('#quotes');
-  var $ulTop5 = $('#top-quotes');
-  var $ulBottom5 = $('#bottom-quotes');
   var $getQuotesBtn = $('.get-quotes');
 
+  // ==========================================================================
+  // If present, get quotes out of local storage and append to list
   var storedQuotes = localStorage.getItem('quotes');
   var currentQuotes = [];
 
@@ -13,12 +13,13 @@ $(function() {
     currentQuotes = JSON.parse(storedQuotes);
 
     for (var i = 0; i < currentQuotes.length; i++) {
-      addQuote(currentQuotes[i]);
+      var $quoteLi = createQuoteLi(currentQuotes[i]);
+      $ulQuotes.append($quoteLi);
     }
   }
 
   // ===========================================================================
-  //
+  // Event listeners for incrementing, decrementing, and fetching new quotes
   $ulQuotes.on('click', 'span.glyphicon-chevron-up', function(event) {
     incrementScore(event);
   });
@@ -34,7 +35,7 @@ $(function() {
   });
 
   // ===========================================================================
-  // Function to get quotes from forismatic.com API
+  // GET request to forismatic.com API
   function getQuote(key) {
     return $.ajax({
       url: `https://api.forismatic.com/api/1.0/?method=getQuote&key=${key}&format=jsonp&lang=en`,
@@ -44,7 +45,7 @@ $(function() {
   }
 
   // ===========================================================================
-  //
+  // Generate random, unique keys - assumes that it will result in unique quotes
   function generateKeys(numQuotes) {
     var quoteKeys = [];
     var count = 0;
@@ -62,7 +63,8 @@ $(function() {
   }
 
   // ===========================================================================
-  //
+  // Creates array of promises for Promise.all, updates quote objects returned,
+  // appends to list and stores in local storage
   function createPromises(quoteKeys) {
     var promises = [];
 
@@ -77,14 +79,19 @@ $(function() {
 
         for (var i = 0; i < quotes.length; i++) {
           var link = quotes[i].quoteLink;
+
           quotes[i].id = link.split('/')[4];
           quotes[i].score = 0;
           delete quotes[i].senderName;
           delete quotes[i].senderLink;
+
           if (!quotes[i].quoteAuthor) {
             quotes[i].quoteAuthor = 'Unknown';
           }
-          addQuote(quotes[i]);
+
+          var $quoteLi = createQuoteLi(quotes[i]);
+
+          $ulQuotes.append($quoteLi);
           quotesToStore.push(quotes[i]);
         }
 
@@ -94,78 +101,83 @@ $(function() {
         console.log(err);
       });
   }
-
-  // ===========================================================================
-  //
-  function addQuote(quote) {
-    var { id, quoteText, quoteAuthor, quoteLink } = quote;
-    var $li = $('<li>');
-
-    var $upSpan = $('<span>');
-    $upSpan.addClass('glyphicon glyphicon-chevron-up');
-
-    var $downSpan = $('<span>');
-    $downSpan.addClass('glyphicon glyphicon-chevron-down');
-
-    var $quote = $('<a>');
-    $quote
-      .attr('href', quoteLink)
-      .attr('target', '_blank')
-      .text(quoteText);
-
-    var $authorSpan = $('<span>');
-    $authorSpan.addClass('author').text(quoteAuthor);
-
-    var $hiddenId = $('<p>');
-    $hiddenId.text(id).addClass('hidden');
-
-    $li.append($upSpan);
-    $li.append($downSpan);
-    $li.append($quote);
-    $li.append($authorSpan);
-    $li.append($hiddenId);
-    $ulQuotes.append($li);
-  }
-
-  // ===========================================================================
-  //
-  function incrementScore(event) {
-    var target = event.target;
-    var $parent = $(target).parent();
-    var clickedId = $parent
-      .children()
-      .eq(4)
-      .text();
-
-    var quotes = JSON.parse(localStorage.getItem('quotes'));
-
-    for (var i = 0; i < quotes.length; i++) {
-      if (clickedId === quotes[i].id) {
-        quotes[i].score++;
-      }
-    }
-
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-  }
-
-  // ===========================================================================
-  //
-  function decrementScore(event) {
-    var target = event.target;
-    var $parent = $(target).parent();
-    var clickedId = $parent
-      .children()
-      .eq(4)
-      .text();
-
-    var quotes = JSON.parse(localStorage.getItem('quotes'));
-
-    for (var i = 0; i < quotes.length; i++) {
-      if (clickedId === quotes[i].id) {
-        quotes[i].score--;
-      }
-    }
-
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-  }
 });
+
+// ===========================================================================
+// increments score for clicked quote and updates local storage - a database
+// or Redux would be way more efficient
+function incrementScore(event) {
+  var target = event.target;
+  var $parent = $(target).parent();
+  var clickedId = $parent
+    .children()
+    .eq(4)
+    .text();
+
+  console.log(clickedId);
+
+  var quotes = JSON.parse(localStorage.getItem('quotes'));
+
+  for (var i = 0; i < quotes.length; i++) {
+    if (clickedId === quotes[i].id) {
+      quotes[i].score++;
+    }
+  }
+
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// ===========================================================================
+// decrements score for clicked quote and updates local storage - a database
+// or Redux would be way more efficient
+function decrementScore(event) {
+  var target = event.target;
+  var $parent = $(target).parent();
+  var clickedId = $parent
+    .children()
+    .eq(4)
+    .text();
+
+  var quotes = JSON.parse(localStorage.getItem('quotes'));
+
+  for (var i = 0; i < quotes.length; i++) {
+    if (clickedId === quotes[i].id) {
+      quotes[i].score--;
+    }
+  }
+
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// ===========================================================================
+// creates list item for quotes
+function createQuoteLi(quote) {
+  var { id, quoteText, quoteAuthor, quoteLink } = quote;
+  var $li = $('<li>');
+
+  var $upSpan = $('<span>');
+  $upSpan.addClass('glyphicon glyphicon-chevron-up');
+
+  var $downSpan = $('<span>');
+  $downSpan.addClass('glyphicon glyphicon-chevron-down');
+
+  var $quote = $('<a>');
+  $quote
+    .attr('href', quoteLink)
+    .attr('target', '_blank')
+    .text(quoteText);
+
+  var $authorSpan = $('<span>');
+  $authorSpan.addClass('author').text(quoteAuthor);
+
+  var $hiddenId = $('<p>');
+  $hiddenId.text(id).addClass('hidden');
+
+  $li.append($upSpan);
+  $li.append($downSpan);
+  $li.append($quote);
+  $li.append($authorSpan);
+  $li.append($hiddenId);
+
+  return $li;
+}
