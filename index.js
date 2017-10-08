@@ -111,10 +111,33 @@ function incrementScore(event) {
   var $parent = $(target).parent();
   var clickedId = $parent
     .children()
+    .eq(5)
+    .text();
+
+  var score = $parent
+    .children()
     .eq(4)
     .text();
 
-  console.log(clickedId);
+  score = Number(score) + 1;
+
+  var $scoreSpan = $parent.children().eq(4);
+
+  $parent
+    .children()
+    .eq(4)
+    .text(score);
+
+  if (Number(score) > 0) {
+    $scoreSpan.addClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  } else if (Number(score) < 0) {
+    $scoreSpan.addClass('text-danger');
+    $scoreSpan.removeClass('text-success');
+  } else {
+    $scoreSpan.removeClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  }
 
   var quotes = JSON.parse(localStorage.getItem('quotes'));
 
@@ -135,8 +158,33 @@ function decrementScore(event) {
   var $parent = $(target).parent();
   var clickedId = $parent
     .children()
+    .eq(5)
+    .text();
+
+  var score = $parent
+    .children()
     .eq(4)
     .text();
+
+  score = Number(score) - 1;
+
+  var $scoreSpan = $parent.children().eq(4);
+
+  $parent
+    .children()
+    .eq(4)
+    .text(score);
+
+  if (Number(score) > 0) {
+    $scoreSpan.addClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  } else if (Number(score) < 0) {
+    $scoreSpan.addClass('text-danger');
+    $scoreSpan.removeClass('text-success');
+  } else {
+    $scoreSpan.removeClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  }
 
   var quotes = JSON.parse(localStorage.getItem('quotes'));
 
@@ -152,7 +200,7 @@ function decrementScore(event) {
 // ===========================================================================
 // creates list item for quotes
 function createQuoteLi(quote) {
-  var { id, quoteText, quoteAuthor, quoteLink } = quote;
+  var { id, quoteText, quoteAuthor, quoteLink, score } = quote;
   var $li = $('<li>');
 
   var $upSpan = $('<span>');
@@ -170,6 +218,20 @@ function createQuoteLi(quote) {
   var $authorSpan = $('<span>');
   $authorSpan.addClass('author').text(quoteAuthor);
 
+  var $scoreSpan = $('<span>');
+  $scoreSpan.addClass('score').text(score);
+
+  if (Number(score) > 0) {
+    $scoreSpan.addClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  } else if (Number(score) < 0) {
+    $scoreSpan.addClass('text-danger');
+    $scoreSpan.removeClass('text-success');
+  } else {
+    $scoreSpan.removeClass('text-success');
+    $scoreSpan.removeClass('text-danger');
+  }
+
   var $hiddenId = $('<p>');
   $hiddenId.text(id).addClass('hidden');
 
@@ -177,6 +239,7 @@ function createQuoteLi(quote) {
   $li.append($downSpan);
   $li.append($quote);
   $li.append($authorSpan);
+  $li.append($scoreSpan);
   $li.append($hiddenId);
 
   return $li;

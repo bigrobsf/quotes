@@ -1,4 +1,4 @@
-body {
+main {
   margin-left: 15px;
   margin-right: 15px;
 }
@@ -6,6 +6,12 @@ body {
 header {
   text-align: center;
   margin-bottom: 20px;
+  background-color: #cccccc;
+  padding: 10px 0 20px 0;
+}
+
+h3 {
+  margin-top: 10px;
 }
 
 .header-text,
@@ -14,21 +20,23 @@ button {
 }
 
 .page-nav {
-  margin-top: 15px;
-}
-
-.wrap {
-  display: flex;
-  justify-content: center;
+  margin-top: 10px;
 }
 
 div.quote-list {
   background-color: #eeeeee;
   padding: 5px 15px;
   margin-bottom: 20px;
-  margin-left: 5px;
-  margin-right: 5px;
   border-radius: 10px;
+}
+
+@media (min-width: 992px) {
+  .left,
+  .right {
+    width: 48%;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
 }
 
 ul {
@@ -50,6 +58,12 @@ li > a {
 li > span.author {
   font-style: italic;
   color: #37474f;
+}
+
+li > span.score {
+  padding-left: 5px;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 a,
