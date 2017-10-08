@@ -74,7 +74,6 @@ $(function() {
 
     Promise.all(promises)
       .then(function(quotes) {
-        console.log(quotes);
         var quotesToStore = [];
 
         for (var i = 0; i < quotes.length; i++) {
