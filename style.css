@@ -1,0 +1,13 @@
+span.glyphicon:hover {
+  cursor: pointer;
+}
+
+.header-text,
+button {
+  display: inline-block;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0px;
+}
